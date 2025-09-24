@@ -1,17 +1,26 @@
 package hello.core.app;
 
-import hello.core.member.*;
-import hello.core.order.*;
+import hello.core.AppConfig;
+import hello.core.member.Grade;
+import hello.core.member.Member;
+import hello.core.member.MemberService;
+import hello.core.order.Order;
+import hello.core.order.OrderService;
+import org.springframework.context.ApplicationContext;
+import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 public class OrderApp {
     public static void main(String[] args) {
-        MemberService memberService = new MemberServiceImpl();
-        OrderService orderService = new OrderServiceImpl();
+        ApplicationContext ac = new AnnotationConfigApplicationContext(AppConfig.class);
 
-        long memberId = 1L;
-        memberService.join(new Member(memberId, "memberA", Grade.VIP));
+        MemberService memberService = ac.getBean("memberService", MemberService.class);
+        OrderService orderService   = ac.getBean("orderService", OrderService.class);
 
-        Order order = orderService.createOrder(memberId, "itemA", 10000);
-        System.out.println(order); // 할인 1000원, 최종 9000원 기대
+        Member member = new Member(1L, "userA", Grade.VIP);
+        memberService.join(member);
+
+        Order order = orderService.createOrder(1L, "itemA", 20000);
+        System.out.println(order);
+        System.out.println("discountPrice = " + order.getDiscountPrice());
     }
 }
